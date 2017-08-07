@@ -77,9 +77,13 @@ public class Root {
 		XSSFWorkbook workbook = new XSSFWorkbook();
 		List<String> sheets = new ArrayList<>();
 		final XSSFSheet[] s = { null };
-		roots.forEach(root -> {
+		for( Root root : roots )
+		{
 			HashMap<String, List<String>> m = root.getMap();
-			//.split("=")[0].replace("{", "")
+			if( m.values().isEmpty() )
+			{
+				continue;
+			}
 
 			Row h;
 			AtomicInteger numberOfRows;
@@ -96,13 +100,39 @@ public class Root {
 			if( m.containsKey("kEYWORDS") )
 			{
 				System.out.println("using " + s[0].getSheetName());
-				h = s[0].getRow(0) == null ? s[0].createRow(0) : s[0].getRow(0);
+				if( s[0].getRow(0) == null )
+				{
+					h = s[0].createRow(0);
+					AtomicInteger i = new AtomicInteger(0);
+					Row finalH = h;
+					Arrays.asList(m.get("kEYWORDS").get(0).split("/")).forEach(lon -> {
+						finalH.createCell(i.getAndIncrement()).setCellValue(lon);
+					});
+					System.out.println("created new header");
+				}
+				else
+				{
+					h = s[0].getRow(0);
+					AtomicInteger numberOfCells = new AtomicInteger(h.getLastCellNum());
+					Row finalH = h;
+					int it = 0;
+					int n = numberOfCells.get();
+					List<String> values = new ArrayList<>();
+					while( it <= n - 1 )
+					{
+						values.add(h.getCell(it).getStringCellValue());
+						it++;
+					}
+					System.out.println(values.toString());
+					Arrays.asList(m.get("kEYWORDS").get(0).split("/")).forEach(lon -> {
+						if( !values.contains(lon) )
+						{
+							finalH.createCell(numberOfCells.getAndIncrement()).setCellValue(lon);
 
-				AtomicInteger i = new AtomicInteger(0);
-				Row finalH = h;
-				Arrays.asList(m.get("kEYWORDS").get(0).split("/")).forEach(lon -> {
-					finalH.createCell(i.getAndIncrement()).setCellValue(lon);
-				});
+						}
+					});
+				}
+
 			}
 			int index;
 
@@ -119,8 +149,7 @@ public class Root {
 					cel.setCellValue(m.get(cell.getStringCellValue()).get(0));
 				}
 			}
-
-		});
+		}
 		try( FileOutputStream outputStream = new FileOutputStream(f) )
 		{
 			workbook.write(outputStream);
