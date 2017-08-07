@@ -102,7 +102,7 @@ public class Root {
 				});
 			}
 			int index;
-			
+
 			numberOfRows = new AtomicInteger(s[0].getLastRowNum());
 			h = s[0].createRow(numberOfRows.incrementAndGet());
 			Iterator<Cell> itr = s[0].getRow(0).cellIterator();
