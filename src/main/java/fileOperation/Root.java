@@ -85,10 +85,13 @@ public class Root {
 			AtomicInteger numberOfRows;
 			if( m.containsKey("MACHINEID") )
 			{
-				s[0] = sheets.contains(m.get("MACHINEID").get(0)) ?
-						workbook.getSheet(m.get("MACHINEID").get(0)) :
-						workbook.createSheet(m.get("MACHINEID").get(0));
-				System.out.println("created " + s[0].getSheetName());
+				s[0] = workbook.getSheet(m.get("MACHINEID").get(0));
+				if( s[0] == null )
+				{
+					s[0] = workbook.createSheet(m.get("MACHINEID").get(0));
+					System.out.println("created sheet " + s[0].getSheetName());
+				}
+
 			}
 			if( m.containsKey("kEYWORDS") )
 			{
