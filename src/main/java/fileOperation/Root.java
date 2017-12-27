@@ -29,8 +29,7 @@ public class Root {
     static String target;
 
     public static void main(String[] args) {
-        path = "B:\\project";
-        target = "B:\\project";
+        path = target = args[0];
         List<File> files = filterFiles(path);
         if (files.size() == 0) {
             logger.info("No files found.");
